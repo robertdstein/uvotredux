@@ -105,7 +105,7 @@ And then navigate to the directory containing your data.
 ## Using uvotredux
 
 Once you are in the data directory you created earlier 
-(either in the docker container or the local container if you installed locally), 
+(either in the docker container or the local directory if you installed locally), 
 you can actually reduce the data.
 
 You can just run the reduction:
