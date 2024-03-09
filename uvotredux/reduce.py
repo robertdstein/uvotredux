@@ -109,8 +109,15 @@ def unpack_swift_directory(
     all_swift_obs = [
         x
         for x in directory.glob("*")
-        if (x.is_dir()) & (len(x.name) == 11) & (sum(~c.isdigit() for c in x.name) == 0)
+        if (x.is_dir())
+        & (len(x.name) == 11)
+        & (sum(not c.isdigit() for c in x.name) == 0)
     ]
+
+    if len(all_swift_obs) == 0:
+        raise FileNotFoundError(
+            f"No Swift observations found in directory: {directory}"
+        )
 
     src_region_path = directory / src_region_name
     bkg_region_path = directory / bkg_region_name
