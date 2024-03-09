@@ -1,0 +1,59 @@
+[build-system]
+requires = ["setuptools>=45", "setuptools-scm"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "uvotredux"
+version = "0.1.2"
+description = "Python wrapper to reduce Swift UVOT data"
+authors = [
+    {name = "Robert Stein", email = "rdstein@caltech.edu"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = ">=3.10"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    'Programming Language :: Python :: 3.10',
+    'Programming Language :: Python :: 3.11',
+    'Programming Language :: Python :: 3.12',
+    'Intended Audience :: Science/Research',
+    'Intended Audience :: End Users/Desktop',
+    'Intended Audience :: Developers',
+    'Natural Language :: English',
+    'Topic :: Scientific/Engineering',
+    'Topic :: Scientific/Engineering :: Astronomy',
+    'Topic :: Scientific/Engineering :: Physics',
+    'Operating System :: POSIX',
+    'Operating System :: Unix',
+    'Operating System :: MacOS',
+]
+dependencies = [
+    "pathlib",
+    "pre-commit"
+]
+[project.optional-dependencies]
+dev = [
+    "black == 24.2.0",
+    "isort == 5.13.2",
+    "pylint == 3.1.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/robertdstein/uvotredux"
+
+[project.scripts]
+uvotredux = "uvotredux.run:main"
+
+[tool.setuptools]
+packages = ["uvotredux"]
+
+[tool.isort]
+profile = "black"
+
+[tool.pylint.format]
+max-line-length = "88"
+disable=["logging-fstring-interpolation"]
+good-names=["ax", "ra", "df", "pi", "i"]
+exclude-too-few-public-methods=["pydantic.*"]
+extension-pkg-whitelist=["pydantic"]
