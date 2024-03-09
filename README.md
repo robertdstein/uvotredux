@@ -91,7 +91,7 @@ Then inside the docker container:
 
 ```bash
 export PATH="/home/heasoft/.local/bin:$PATH"
-pip install uvotsource
+pip install uvotredux
 cd /mydata 
 ```
 
@@ -99,7 +99,7 @@ cd /mydata
 You can instead install `HEASoft` locally, following the official guide: https://heasarc.gsfc.nasa.gov/docs/software/lheasoft/ . In that case, when you are done, run:
 
 ```bash
-pip install uvotsource
+pip install uvotredux
 ```
 
 And then navigate to the directory containing your data.
