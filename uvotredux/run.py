@@ -34,5 +34,5 @@ def main():
     )
     args = parser.parse_args()
     unpack_swift_directory(
-        args.swift_obs_dir, args.src_region_path, args.bkg_region_path
+        args.swift_obs_dir, args.src_region_name, args.bkg_region_name
     )
