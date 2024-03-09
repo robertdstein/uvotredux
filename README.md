@@ -7,8 +7,19 @@ uvotredux is a simple python wrapper around heasoft, which can iteratively reduc
 First check if your target has been observed: https://www.swift.psu.edu/operations/obsSchedule.php
 You might see “SSA observations”, but no data is actually taken for these. You should ignore them.
 
-For very recent data, try quicklook: 
+### Downloading Recent Data
+For very recent data (within ~2 hours), 
+you can download from the quicklook archive: https://swift.gsfc.nasa.gov/cgi-bin/sdc/ql?
 
+You can search for your target, and then download the data.
+Make sure you tick the box to include UVOT data!
+
+You will get a tar file for each visit, which you can decompress.
+Place each decompressed directory in a parent directory. 
+Give the parent directory a name that is informative, e.g `swift_data_sn2023uqf`.
+
+
+### Downloading Old Data
 For old data, check the archive: https://www.swift.ac.uk/swift_portal/
 (After you found the archive data, download it as a tar/zip and make sure you tick the box to include UVOT data!)
 
@@ -17,8 +28,12 @@ I suggest renaming this to something more informative e.g `swift_data_sn2023uqf.
 or `swift_data_sn2023uqf.tar`.
 
 Finally, you should decompress your files. On mac/linux this is easy. 
-The unpacked data directory is the where you can run the iterative data reduction, 
-it’ll look like:
+You will get a directory with the same name as the tar/zip file.
+
+## Setting up Extraction Regions
+Whether you downloaded recent or old data, the parent data directory is 
+where you can run the iterative data reduction. 
+It’ll look like:
 
 `swift_data_sn2023uqf/`
 - 00016282001
@@ -30,7 +45,7 @@ And so on, with one subdirectory for each Swift visit of your target.
 There are compressed images in these subdirectories, 
 but uvotredux will be able to unpack them for you automatically later on.
 
-Lastly, in the unpacked directory `swift_data_sn2023uqf/`, 
+In the directory `swift_data_sn2023uqf/`, 
 you need to create two .reg files. One is your source, 
 centered at the position with an appropriate radius. 
 The other is a background region, and that should be free of other sources!
@@ -44,13 +59,15 @@ At this point, you are ready to reduce data!
 
 ## Installing Heasoft
 
-To reduce Swift data you require HEASOFT .
+To actually reduce Swift data you require NASA's HEASOFT.
 
 ### Installation via Docker
-I found installing via Docker to be the easiest: 
+I found installing via Docker to be the easiest. You can find instructions here: 
 https://heasarc.gsfc.nasa.gov/lheasoft/docker.html 
 
-Start a terminal e.g with:
+You will need to install Docker, and make the heasoft Docker image, following the guide.
+
+Then, start a terminal e.g with:
 
 ```bash
 docker run -it -rm -v /path/to/download:/mydata heasoft:v6.33 bash
