@@ -16,16 +16,21 @@ def main():
 
     :return: None
     """
-
     parser = argparse.ArgumentParser(description="Unpack a Swift UVOT observation")
     parser.add_argument(
         "-d", "--swift_obs_dir", help="Path to the base Swift observation directory"
     )
     parser.add_argument(
-        "-s", "--src_region_path", help="Path to the source region file"
+        "-s",
+        "--src_region_name",
+        help="Path to the source region file",
+        default="src.reg",
     )
     parser.add_argument(
-        "-b", "--bkg_region_path", help="Path to the background region file"
+        "-b",
+        "--bkg_region_name",
+        help="Path to the background region file",
+        default="bkg.reg",
     )
     args = parser.parse_args()
     unpack_swift_directory(

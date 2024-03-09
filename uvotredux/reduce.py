@@ -56,6 +56,7 @@ def unpack_swift_obs(
         if uvot_save_path.is_file():
             logger.info(f"UVOT image already exists: {uvot_save_path}")
         else:
+            logger.info(f"Executing command: '{cmd}'")
             subprocess.run(cmd, shell=True, check=True)
             logger.info(f"UVOT image created at: {uvot_save_path}")
 
@@ -76,6 +77,7 @@ def unpack_swift_obs(
         if output_path.is_file():
             logger.info(f"UVOT source data already exists: {output_path}")
         else:
+            logger.info(f"Executing command: '{cmd}'")
             subprocess.run(cmd, shell=True, check=True)
             logger.info(f"UVOT source data created at: {output_path}")
 
@@ -87,15 +89,15 @@ def unpack_swift_obs(
 
 def unpack_swift_directory(
     directory: Path | None = None,
-    src_region_path: Path | None = None,
-    bkg_region_path: Path | None = None,
+    src_region_name: str = "src.reg",
+    bkg_region_name: str = "bkg.reg",
 ):
     """
     Function to unpack all the swift observations in a directory
 
     :param directory: Directory containing the swift observations
-    :param src_region_path: Path to the source region file
-    :param bkg_region_path: Path to the background region file
+    :param src_region_name: Path to the source region file
+    :param bkg_region_name: Path to the background region file
     :return: None
     """
 
@@ -103,22 +105,17 @@ def unpack_swift_directory(
         directory = Path.cwd()
 
     all_swift_obs = [
-        x for x in directory.glob("*") if (x.is_dir()) & (len(x.name) == 11)
+        x
+        for x in directory.glob("*")
+        if (x.is_dir()) & (len(x.name) == 11) & (sum(~c.isdigit() for c in x.name) == 0)
     ]
 
-    if src_region_path is None:
-        src_region_path = directory / "src.reg"
-        logger.info(f"Source region path not provided, using {src_region_path}")
+    src_region_path = directory / src_region_name
+    bkg_region_path = directory / bkg_region_name
 
-    if not src_region_path.is_file():
-        raise FileNotFoundError(f"Region file {src_region_path} not found")
-
-    if bkg_region_path is None:
-        bkg_region_path = directory / "bkg.reg"
-        logger.info(f"Background region path not provided, using {bkg_region_path}")
-
-    if not bkg_region_path.is_file():
-        raise FileNotFoundError(f"Region file {bkg_region_path} not found")
+    for path in [src_region_path, bkg_region_path]:
+        if not path.is_file():
+            raise FileNotFoundError(f"Region file {path} not found")
 
     for swift_obs in sorted(all_swift_obs):
         unpack_swift_obs(

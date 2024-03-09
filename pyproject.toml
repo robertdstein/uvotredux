@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "uvotredux"
-version = "0.1.0"
-description = "CLI to reduce Swift UVOT data"
+version = "0.1.1"
+description = "Python wrapper to reduce Swift UVOT data"
 authors = [
     {name = "Robert Stein", email = "rdstein@caltech.edu"}
 ]
