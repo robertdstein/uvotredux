@@ -1,5 +1,7 @@
 # uvotredux
 
+[![PyPI version](https://badge.fury.io/py/uvotredux.svg)](https://badge.fury.io/py/uvotredux)
+
 `uvotredux` is a simple python wrapper around `HEASoft`, 
 which can iteratively reduce Swift UVOT data. 
 The actual data reduction is done by `HEASoft`, 
