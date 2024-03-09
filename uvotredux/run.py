@@ -7,8 +7,6 @@ import logging
 
 from uvotredux.reduce import unpack_swift_directory
 
-logging.basicConfig(level=logging.INFO)
-
 
 def main():
     """
@@ -16,7 +14,10 @@ def main():
 
     :return: None
     """
-    parser = argparse.ArgumentParser(description="Unpack a Swift UVOT observation")
+    logging.basicConfig(level=logging.INFO)
+    parser = argparse.ArgumentParser(
+        description="Unpack a set of Swift UVOT observation"
+    )
     parser.add_argument(
         "-d", "--swift_obs_dir", help="Path to the base Swift observation directory"
     )

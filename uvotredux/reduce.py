@@ -104,6 +104,8 @@ def unpack_swift_directory(
     if directory is None:
         directory = Path.cwd()
 
+    logger.info(f"Unpacking Swift observations in directory: {directory}")
+
     all_swift_obs = [
         x
         for x in directory.glob("*")
