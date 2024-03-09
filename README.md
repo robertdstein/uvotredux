@@ -79,7 +79,7 @@ You will need to install Docker, and make the `HEASoft` Docker image, following 
 Then, start a terminal e.g with:
 
 ```bash
-docker run -it -rm -v /path/to/swift_data_sn2023uqf:/mydata heasoft:v6.33 bash
+docker run -it --rm -v /path/to/swift_data_sn2023uqf:/mydata heasoft:v6.33 bash
 ```
 
 or whatever version of `HEASoft` you want to use.
