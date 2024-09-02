@@ -36,7 +36,7 @@ dependencies = [
 dev = [
     "black == 24.8.0",
     "isort == 5.13.2",
-    "pylint == 3.2.6",
+    "pylint == 3.2.7",
 ]
 
 [project.urls]
