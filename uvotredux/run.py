@@ -33,7 +33,14 @@ def main():
         help="Path to the background region file",
         default="bkg.reg",
     )
+    parser.add_argument(
+        "-o",
+        "--overwrite",
+        help="Overwrite existing files",
+        action="store_true",
+        default=False,
+    )
     args = parser.parse_args()
     unpack_swift_directory(
-        args.swift_obs_dir, args.src_region_name, args.bkg_region_name
+        args.swift_obs_dir, args.src_region_name, args.bkg_region_name, args.overwrite
     )
