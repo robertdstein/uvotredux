@@ -18,7 +18,7 @@ You should just ignore them.
 
 ### Downloading Recent Data
 For very recent data (from ~2 hours to ~1 month), 
-you can download from the quicklook archive: https://swift.gsfc.nasa.gov/cgi-bin/sdc/ql?
+you can download from the quicklook archive: https://swift.gsfc.nasa.gov/sdc/ql/
 
 You can search for your target, and then download the data.
 Make sure you tick the box to include UVOT data!
@@ -62,6 +62,10 @@ The other is a background region, and that should be free of other sources!
 These files are just plain text files containing a single line, of the form:
 ```txt
 fk5;circle(09:33:49.15,+25:06:56.86,3")
+```
+and
+```txt
+fk5;circle(43.45786323544644,25.119753601756596,12")
 ```
 
 At this point, you are ready to reduce data!
