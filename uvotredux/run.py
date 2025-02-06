@@ -5,7 +5,7 @@ Wrapper script to run the swift reduction on a directory using command line argu
 import argparse
 import logging
 
-from uvotredux.reduce import unpack_swift_directory
+from uvotredux.uvot.iterate import iterate_uvot_reduction
 
 
 def main():
@@ -41,6 +41,6 @@ def main():
         default=False,
     )
     args = parser.parse_args()
-    unpack_swift_directory(
+    iterate_uvot_reduction(
         args.swift_obs_dir, args.src_region_name, args.bkg_region_name, args.overwrite
     )
