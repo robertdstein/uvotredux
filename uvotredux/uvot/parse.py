@@ -9,7 +9,11 @@ import pandas as pd
 from astropy.io import fits
 from astropy.table import Table
 
-from uvotredux.utils import convert_met_to_utc, get_observation_dirs
+from uvotredux.utils import (
+    convert_met_to_utc,
+    convert_to_skyportal,
+    get_observation_dirs,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -57,11 +61,13 @@ def combine_uvot_results(
 
 def parse_uvot_results(
     directory: Path | None = None,
+    skyportal: bool = False,
 ):
     """
     Function to parse the UVOT results from a directory
 
     :param directory: Directory containing the UVOT observations
+    :param skyportal: Convert the results to SkyPortal format
     :return: None
     """
 
@@ -112,3 +118,6 @@ def parse_uvot_results(
     slim_output_path = directory / "uvot_summary.csv"
     slim_df.to_csv(slim_output_path)
     print(slim_df)
+
+    if skyportal:
+        convert_to_skyportal(new_df)
