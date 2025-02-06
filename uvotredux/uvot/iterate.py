@@ -17,6 +17,7 @@ def iterate_uvot_reduction(
     src_region_name: str = "src.reg",
     bkg_region_name: str = "bkg.reg",
     overwrite: bool = False,
+    skyportal: bool = False,
 ):
     """
     Function to unpack all the swift observations in a directory
@@ -25,6 +26,7 @@ def iterate_uvot_reduction(
     :param src_region_name: Path to the source region file
     :param bkg_region_name: Path to the background region file
     :param overwrite: Overwrite existing files
+    :param skyportal: Convert the results to SkyPortal format
     :return: None
     """
 
@@ -57,4 +59,4 @@ def iterate_uvot_reduction(
             overwrite=overwrite,
         )
 
-    parse_uvot_results(directory)
+    parse_uvot_results(directory, skyportal=skyportal)

@@ -40,7 +40,7 @@ Then inside the docker container:
 
 ```bash
 export PATH="/home/heasoft/.local/bin:$PATH"
-pip install uvotredux
+pip install -e /uvotredux
 cd /mydata 
 ```
 
