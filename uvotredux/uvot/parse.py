@@ -97,7 +97,17 @@ def parse_uvot_results(
     new_df.to_csv(output_path)
 
     slim_df = new_df[
-        ["ISOT", "MJD", "FILTER", "EXPOSURE", "AB_MAG", "AB_MAG_ERR", "AB_MAG_LIM"]
+        [
+            "ISOT",
+            "MJD",
+            "RA",
+            "DEC",
+            "FILTER",
+            "EXPOSURE",
+            "AB_MAG",
+            "AB_MAG_ERR",
+            "AB_MAG_LIM",
+        ]
     ]
     slim_output_path = directory / "uvot_summary.csv"
     slim_df.to_csv(slim_output_path)
