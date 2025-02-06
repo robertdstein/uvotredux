@@ -9,27 +9,19 @@ import logging
 import subprocess
 from pathlib import Path
 
+from uvotredux.uvot.filters import filter_dict
+
 logger = logging.getLogger(__name__)
 
-filter_dict = {
-    "vv": "V",
-    "bb": "B",
-    "uu": "U",
-    "w1": "UW1",
-    "m2": "UM2",
-    "w2": "UW2",
-    "wh": "W",
-}
 
-
-def unpack_swift_obs(
+def unpack_single_uvot_obs(
     swift_obs_dir: Path,
     src_region_path: Path,
     bkg_region_path: Path,
     overwrite: bool = False,
 ):
     """
-    Function to unpack the swift observation and create the uvot images
+    Function to unpack the swift UVOT observation and create the uvot images
 
     :param swift_obs_dir: Single swift observation directory
     :param src_region_path: Path to the source region file
@@ -76,7 +68,7 @@ def unpack_swift_obs(
         if not uvot_save_path.is_file():
             logger.error(f"UVOT image not created: {uvot_save_path}")
             logger.error(f"Command: {cmd}")
-            raise FileNotFoundError(f"UVOT image not created: {uvot_save_path}")
+            return
 
         output_path = uvot_dir / f"{uvot_filter}.out"
 
@@ -101,56 +93,3 @@ def unpack_swift_obs(
         if not output_path.is_file():
             logger.error(f"UVOT source data not created: {output_path}")
             logger.error(f"Command: {cmd}")
-            raise FileNotFoundError(f"UVOT source data not created: {output_path}")
-
-
-def unpack_swift_directory(
-    directory: Path | None = None,
-    src_region_name: str = "src.reg",
-    bkg_region_name: str = "bkg.reg",
-    overwrite: bool = False,
-):
-    """
-    Function to unpack all the swift observations in a directory
-
-    :param directory: Directory containing the swift observations
-    :param src_region_name: Path to the source region file
-    :param bkg_region_name: Path to the background region file
-    :param overwrite: Overwrite existing files
-    :return: None
-    """
-
-    if directory is None:
-        directory = Path.cwd()
-
-    directory = Path(directory)
-
-    logger.info(f"Unpacking Swift observations in directory: {directory}")
-
-    all_swift_obs = [
-        x
-        for x in directory.glob("*")
-        if (x.is_dir())
-        & (len(x.name) == 11)
-        & (sum(not c.isdigit() for c in x.name) == 0)
-    ]
-
-    if len(all_swift_obs) == 0:
-        raise FileNotFoundError(
-            f"No Swift observations found in directory: {directory}"
-        )
-
-    src_region_path = directory / src_region_name
-    bkg_region_path = directory / bkg_region_name
-
-    for path in [src_region_path, bkg_region_path]:
-        if not path.is_file():
-            raise FileNotFoundError(f"Region file {path} not found")
-
-    for swift_obs in sorted(all_swift_obs):
-        unpack_swift_obs(
-            swift_obs,
-            src_region_path=src_region_path,
-            bkg_region_path=bkg_region_path,
-            overwrite=overwrite,
-        )

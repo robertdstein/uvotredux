@@ -68,6 +68,10 @@ and
 fk5;circle(43.45786323544644,25.119753601756596,12")
 ```
 
+To test the extraction region, I suggest taking the reddest image, 
+uncompressing the _sk.img.gz file, and opening it in ds9. 
+Then you can overlay the regions to see if they are centered correctly.
+
 At this point, you are ready to reduce data!
 
 ## Installing HEASoft
@@ -79,6 +83,10 @@ I found installing via Docker to be the easiest. You can find instructions here:
 https://heasarc.gsfc.nasa.gov/lheasoft/docker.html 
 
 You will need to install Docker, and make the `HEASoft` Docker image, following the guide.
+
+Then, there are two ways to use uvotredux:
+
+#### Docker with PyPi uvotredux
 
 Then, start a terminal e.g with:
 
@@ -96,6 +104,29 @@ Then inside the docker container:
 ```bash
 export PATH="/home/heasoft/.local/bin:$PATH"
 pip install uvotredux
+cd /mydata 
+```
+
+#### Docker with local (editable) uvotredux
+
+If you want to edit the code, you can instead clone the repository somewhere on your machine:
+
+```bash
+git clone https://github.com/robertdstein/uvotredux.git
+```
+
+Then, start the docker container with:
+
+```bash
+docker run -it --rm -v /path/to/swift_data_sn2023uqf:/mydata -v /path/to/uvotredux:/uvotredux heasoft:v6.33 bash
+```
+
+Then inside the docker container:
+
+```bash
+export PATH="/home/heasoft/.local/bin:$PATH"
+cd /uvotredux
+pip install -e .
 cd /mydata 
 ```
 
@@ -121,6 +152,12 @@ uvotredux
 ```
 This will iteratively reduce each image in the subfolders, 
 and that is where you can find reduced images and source tables.
+
+The code will scrape the output files of each individual image, 
+and produce a combined csv file with all the available info (`uvot_results.csv`).
+Beware: this file conrtains over a hundred columns per image.
+
+There is also a smaller file (`uvot_summary.csv`) that contains only the most important columns.
 
 **Make sure you have a fast internet connection, 
 because the uvot pipeline can attempt to download fits files >150Mb 
