@@ -46,8 +46,8 @@ def create_regions(
 
         c = SkyCoord(ra=ra, dec=dec, unit="deg")
 
-        separation = 50 * u.arcseconds  # pylint: disable=no-member
-        position_angle = 45 * u.degrees  # pylint: disable=no-member
+        separation = 50 * u.arcsec  # pylint: disable=no-member
+        position_angle = 45 * u.deg  # pylint: disable=no-member
 
         c2 = c.directional_offset_by(position_angle, separation)
 

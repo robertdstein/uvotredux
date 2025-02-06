@@ -40,7 +40,16 @@ def main():
         action="store_true",
         default=False,
     )
+    parser.add_argument(
+        "--skyportal",
+        action="store_true",
+        default=False,
+    )
     args = parser.parse_args()
     iterate_uvot_reduction(
-        args.swift_obs_dir, args.src_region_name, args.bkg_region_name, args.overwrite
+        args.swift_obs_dir,
+        args.src_region_name,
+        args.bkg_region_name,
+        args.overwrite,
+        skyportal=args.skyportal,
     )
