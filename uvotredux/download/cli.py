@@ -46,7 +46,9 @@ def main():
     args = parser.parse_args()
 
     # Create src.reg and bkg.reg files, if they don't already exist
-    create_regions(args.ra, args.dec, base_dir=args.swift_obs_dir)
+    create_regions(
+        args.ra, args.dec, base_dir=args.swift_obs_dir, overwrite=args.overwrite
+    )
 
     # Download the data
     download_data(

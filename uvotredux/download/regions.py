@@ -15,9 +15,15 @@ def create_regions(
     ra: float,
     dec: float,
     base_dir: Path | None = None,
+    overwrite: bool = False,
 ):
     """
     Function to create the source/background region files for the Swift  observations
+
+    :param ra: Right Ascension in degrees
+    :param dec: Declination in degrees
+    :param base_dir: Base directory to create the region files
+    :param overwrite: Overwrite existing files
 
     :return: None
     """
@@ -28,7 +34,7 @@ def create_regions(
     src_region = base_dir / "src.reg"
     bkg_region = base_dir / "bkg.reg"
 
-    if src_region.is_file():
+    if src_region.is_file() and not overwrite:
         logger.info(f"Skipping, source region file already exists: {src_region}")
     else:
         logger.info(f"Creating source region file: {src_region}")
@@ -39,7 +45,7 @@ def create_regions(
         with open(src_region, "w", encoding="utf8") as f:
             f.write(f'fk5;circle({ra_str},{dec_str},3")\n')
 
-    if bkg_region.is_file():
+    if bkg_region.is_file() and not overwrite:
         logger.info(f"Skipping, background region file already exists: {bkg_region}")
     else:
         logger.info(f"Creating background region file: {bkg_region}")
