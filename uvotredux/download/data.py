@@ -49,4 +49,4 @@ def download_data(
             continue
 
         logger.info(f"Downloading Swift data for observation: {obs_id}")
-        Data(obsid=obs_id, uvot=True, outdir=out_dir.parent, clobber=True)
+        Data(obsid=obs_id, uvot=True, xrt=True, outdir=out_dir.parent, clobber=True)
