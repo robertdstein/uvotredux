@@ -30,7 +30,7 @@ classifiers = [
 ]
 dependencies = [
     "pathlib",
-    "astropy",
+    "astropy>=6.0.0",
     "pandas",
     "swifttools>=3.0.0"
 ]
