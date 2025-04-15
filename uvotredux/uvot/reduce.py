@@ -62,8 +62,12 @@ def unpack_single_uvot_obs(
             logger.info(f"UVOT image already exists: {uvot_save_path}")
         else:
             logger.info(f"Executing command: '{cmd}'")
-            subprocess.run(cmd, shell=True, check=True)
-            logger.info(f"UVOT image created at: {uvot_save_path}")
+            try:
+                subprocess.run(cmd, shell=True, check=True)
+                logger.info(f"UVOT image created at: {uvot_save_path}")
+            except subprocess.CalledProcessError as e:
+                logger.error(f"Error creating UVOT image: {e}")
+                continue
 
         if not uvot_save_path.is_file():
             logger.error(f"UVOT image not created: {uvot_save_path}")
@@ -87,8 +91,12 @@ def unpack_single_uvot_obs(
             logger.info(f"UVOT source data already exists: {output_path}")
         else:
             logger.info(f"Executing command: '{cmd}'")
-            subprocess.run(cmd, shell=True, check=True)
-            logger.info(f"UVOT source data created at: {output_path}")
+            try:
+                subprocess.run(cmd, shell=True, check=True)
+                logger.info(f"UVOT source data created at: {output_path}")
+            except subprocess.CalledProcessError as e:
+                logger.error(f"Error creating UVOT source data: {e}")
+                continue
 
         if not output_path.is_file():
             logger.error(f"UVOT source data not created: {output_path}")
