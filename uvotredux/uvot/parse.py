@@ -51,7 +51,9 @@ def combine_uvot_results(
     # Parse each individual UVOT image
     all_df = []
     for uvot_image in sorted(image_output_files):
+        parent_dir = uvot_image.parents[2].name
         df = parse_single_uvot_results(uvot_image)
+        df["PARENT_DIR"] = parent_dir
         all_df.append(df)
 
     new_df = pd.concat(all_df)
@@ -113,6 +115,7 @@ def parse_uvot_results(
             "AB_MAG",
             "AB_MAG_ERR",
             "AB_MAG_LIM",
+            "PARENT_DIR",
         ]
     ]
     slim_output_path = directory / "uvot_summary.csv"

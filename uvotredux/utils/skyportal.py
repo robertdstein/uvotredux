@@ -29,7 +29,13 @@ def convert_to_skyportal(df: pd.DataFrame):
     filters = [f"uvot::{x.lower().strip()}" for x in new["FILTER"]]
     new["filter"] = filters
 
-    cut = new[list(mapping.values()) + ["magsys", "filter"]]
+    mask = new["mag"] < 99.0  # & (new["mag"] < new["limiting_mag"])
+
+    cut = new[mask][list(mapping.values()) + ["magsys", "filter"]]
+
+    mask = cut["mag"] > cut["limiting_mag"]
+    cut.loc[mask, "mag"] = None
+    cut.loc[mask, "magerr"] = None
 
     with io.StringIO() as f:
         cut.to_csv(f, index=False)
