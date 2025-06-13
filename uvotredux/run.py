@@ -5,7 +5,7 @@ Wrapper script to run the swift reduction on a directory using command line argu
 import argparse
 import logging
 
-from uvotredux.reduce import unpack_swift_directory
+from uvotredux.uvot.iterate import iterate_uvot_reduction
 
 
 def main():
@@ -33,7 +33,23 @@ def main():
         help="Path to the background region file",
         default="bkg.reg",
     )
+    parser.add_argument(
+        "-o",
+        "--overwrite",
+        help="Overwrite existing files",
+        action="store_true",
+        default=False,
+    )
+    parser.add_argument(
+        "--skyportal",
+        action="store_true",
+        default=False,
+    )
     args = parser.parse_args()
-    unpack_swift_directory(
-        args.swift_obs_dir, args.src_region_name, args.bkg_region_name
+    iterate_uvot_reduction(
+        args.swift_obs_dir,
+        args.src_region_name,
+        args.bkg_region_name,
+        args.overwrite,
+        skyportal=args.skyportal,
     )

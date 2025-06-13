@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "uvotredux"
-version = "0.1.2"
+version = "0.2.0"
 description = "Python wrapper to reduce Swift UVOT data"
 authors = [
     {name = "Robert Stein", email = "rdstein@caltech.edu"}
@@ -30,13 +30,16 @@ classifiers = [
 ]
 dependencies = [
     "pathlib",
-    "pre-commit"
+    "astropy>=6.0.0",
+    "pandas",
+    "swifttools>=3.0.0"
 ]
 [project.optional-dependencies]
 dev = [
     "black == 25.1.0",
     "isort == 6.0.1",
-    "pylint == 3.3.7",
+    "pylint == 3.3.6",
+    "pre-commit"
 ]
 
 [project.urls]
@@ -44,6 +47,7 @@ Homepage = "https://github.com/robertdstein/uvotredux"
 
 [project.scripts]
 uvotredux = "uvotredux.run:main"
+uvotdownload = "uvotredux.download.cli:main"
 
 [tool.setuptools]
 packages = ["uvotredux"]
