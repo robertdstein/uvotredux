@@ -2,6 +2,7 @@
 Command line interface for the download module
 """
 
+# pylint: disable=duplicate-code
 import argparse
 import logging
 
