@@ -2,8 +2,6 @@ name: Test with Docker
 
 on:
   push:
-    branches:
-      - main
   pull_request:
 
 jobs:
