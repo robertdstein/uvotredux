@@ -16,15 +16,16 @@ jobs:
       options: --user root
 
     steps:
+      - name: Create data directory
+        run: |
+          mkdir -p $UVOTREDUX_DATA_DIR
+
       - name: Check out code
         uses: actions/checkout@v3
 
       - name: Install dependencies
         run: pip install -e ".[dev]"
 
-      - name: Create data directory
-        run: mkdir -p $UVOTREDUX_DATA_DIR
-
       - name: Run tests
         working-directory: /mydata
-        run: python -m unittest discover tests
+        run: python -m unittest discover $GITHUB_WORKSPACE/tests
