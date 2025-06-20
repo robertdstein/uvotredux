@@ -37,8 +37,8 @@ jobs:
           mkdir -p $UVOTREDUX_DATA_DIR
 
       - name: Run tests
-        working-directory: /mydata
-        run: coverage run -m unittest discover ${{github.workspace}}/tests
+        working-directory: $UVOTREDUX_DATA_DIR
+        run: coverage run -m unittest discover $GITHUB_WORKSPACE/tests
 
       - name: Run Coveralls
         continue-on-error: true
