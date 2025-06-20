@@ -6,7 +6,7 @@ on:
 
 env:
   HEADASPROMPT: /dev/null # Allows non-interactive use of HEASoft tools
-  UVOTREDUX_DATA_DIR: /data/uvotredux # Directory for UVOT data
+  UVOTREDUX_DATA_DIR: /mydata # Directory for UVOT data
 
 jobs:
   test:
@@ -23,4 +23,5 @@ jobs:
         run: pip install -e ".[dev]"
 
       - name: Run tests
+        working-directory: /mydata
         run: python -m unittest discover tests
