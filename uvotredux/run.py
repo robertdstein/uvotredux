@@ -2,54 +2,43 @@
 Wrapper script to run the swift reduction on a directory using command line arguments
 """
 
-import argparse
 import logging
+from pathlib import Path
 
+from uvotredux.download.run import run_download
 from uvotredux.uvot.iterate import iterate_uvot_reduction
 
+logger = logging.getLogger(__name__)
 
-def main():
+
+def main(
+    ra_deg: float,
+    dec_deg: float,
+    output_dir: Path,
+    overwrite: bool = False,
+    download: bool = True,
+):
     """
-    Function to run the swift reduction on a directory
+    Function to run Swift UVOT reduction on a directory
 
+    :param ra_deg: Right Ascension in degrees
+    :param dec_deg: Declination in degrees
+    :param output_dir: Directory to save the data
+    :param overwrite: Overwrite existing files
+    :param download: Whether to download the data or not
     :return: None
     """
-    logging.basicConfig(level=logging.INFO)
-    parser = argparse.ArgumentParser(
-        description="Unpack a set of Swift UVOT observation"
-    )
-    parser.add_argument(
-        "-d", "--swift_obs_dir", help="Path to the base Swift observation directory"
-    )
-    parser.add_argument(
-        "-s",
-        "--src_region_name",
-        help="Path to the source region file",
-        default="src.reg",
-    )
-    parser.add_argument(
-        "-b",
-        "--bkg_region_name",
-        help="Path to the background region file",
-        default="bkg.reg",
-    )
-    parser.add_argument(
-        "-o",
-        "--overwrite",
-        help="Overwrite existing files",
-        action="store_true",
-        default=False,
-    )
-    parser.add_argument(
-        "--skyportal",
-        action="store_true",
-        default=False,
-    )
-    args = parser.parse_args()
+    if download:
+        run_download(
+            ra_deg=ra_deg,
+            dec_deg=dec_deg,
+            output_dir=output_dir,
+            overwrite=overwrite,
+        )
+    else:
+        logger.info("Skipping download, assuming data is already present.")
+
     iterate_uvot_reduction(
-        args.swift_obs_dir,
-        args.src_region_name,
-        args.bkg_region_name,
-        args.overwrite,
-        skyportal=args.skyportal,
+        directory=output_dir,
+        overwrite=overwrite,
     )

@@ -5,6 +5,7 @@ Module to iterate over all the Swift UVOT observations in a directory and unpack
 import logging
 from pathlib import Path
 
+from uvotredux.download.regions import bkg_path, src_path
 from uvotredux.utils import get_observation_dirs
 from uvotredux.uvot.parse import parse_uvot_results
 from uvotredux.uvot.reduce import unpack_single_uvot_obs
@@ -14,8 +15,6 @@ logger = logging.getLogger(__name__)
 
 def iterate_uvot_reduction(
     directory: Path | None = None,
-    src_region_name: str = "src.reg",
-    bkg_region_name: str = "bkg.reg",
     overwrite: bool = False,
     skyportal: bool = False,
 ):
@@ -23,8 +22,6 @@ def iterate_uvot_reduction(
     Function to unpack all the swift observations in a directory
 
     :param directory: Directory containing the swift observations
-    :param src_region_name: Path to the source region file
-    :param bkg_region_name: Path to the background region file
     :param overwrite: Overwrite existing files
     :param skyportal: Convert the results to SkyPortal format
     :return: None
@@ -44,8 +41,8 @@ def iterate_uvot_reduction(
             f"No Swift observations found in directory: {directory}"
         )
 
-    src_region_path = directory / src_region_name
-    bkg_region_path = directory / bkg_region_name
+    src_region_path = src_path(directory)
+    bkg_region_path = bkg_path(directory)
 
     for path in [src_region_path, bkg_region_path]:
         if not path.is_file():

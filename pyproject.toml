@@ -46,7 +46,7 @@ dev = [
 Homepage = "https://github.com/robertdstein/uvotredux"
 
 [project.scripts]
-uvotredux = "uvotredux.run:main"
+uvotredux = "uvotredux.cli:cli"
 uvotdownload = "uvotredux.download.cli:main"
 
 [tool.setuptools]
