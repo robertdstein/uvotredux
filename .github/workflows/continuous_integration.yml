@@ -24,8 +24,6 @@ jobs:
       - name: Echo workspace
         run: |
           echo "Workspace is ${{ github.workspace }}"
-          ls ${{ github.workspace }}
-        
 
       - name: Install dependencies
         run: |
