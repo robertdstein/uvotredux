@@ -8,45 +8,79 @@ The actual data reduction is done by `HEASoft`,
 while the downloading is done with `swifttools`.
 All credit should go to the Swift team for developing these tools.
 
-You will need to create a parent directory for the swift data. 
-uvotredux will then download the actual data using `swifttools`. 
+I strongly recommend using `uvotredux` in a Docker container.
 
-## Installing HEASoft
+## Installing and using a stable uvotredux release with Docker
 
-To actually reduce Swift data you require NASA's `HEASoft`.
-
-### Installation via Docker
-I found installing via Docker to be the easiest. You can find instructions here: 
-https://heasarc.gsfc.nasa.gov/lheasoft/docker.html 
-
-You will need to install Docker, and make the `HEASoft` Docker image, following the guide.
-
-Then, there are two ways to use uvotredux:
-
-#### Docker with PyPi uvotredux
-
-Then, start a terminal e.g with:
+You can pull the latest version of `uvotredux` from Docker Hub:
 
 ```bash
-docker run -it --rm -v /path/to/swift_data_sn2023uqf:/mydata heasoft:v6.33 bash
+docker pull robertdstein/uvotredux:latest
 ```
 
-or whatever version of `HEASoft` you want to use.
+You need a working docker installation for this. 
+This image contains the latest version of `uvotredux`, and `heasoft`.
 
-This will mount `/path/to/swift_data_sn2023uqf` in the container to `/mydata`, 
-so you can download and reduce the data in that folder.
-
-Then inside the docker container:
+Then you can run the container with:
 
 ```bash
-export PATH="/home/heasoft/.local/bin:$PATH"
-pip install -e /uvotredux
-cd /mydata 
+docker run -it --rm -v ~/path/to/local/data:/mydata robertdstein/uvotredux:latest ARGS
 ```
 
-#### Docker with local (editable) uvotredux
+where `/path/to/local/data` is the path to the directory where you want to download the data,
+and `ARGS` are the arguments you want to pass to `uvotredux`.
 
-If you want to edit the code, you can instead clone the repository somewhere on your machine:
+### Creating a convenient alias for uvotredux
+
+You can create a convenient alias in your shell configuration file (e.g., `.bashrc` or `.zshrc`) to simplify the command:
+
+```bash
+alias uvotredux='docker run --rm -v /path/to/local/data:/mydata robertdstein/uvotredux:latest'
+```
+
+Then, to download and reduce data for a target at RA 133.457 and Dec 25.119, you can run:
+
+```bash
+uvotredux by-ra-dec 133.457 25.119
+```
+
+or to download and reduce data for a target with a specific name, you can run:
+
+```bash
+uvotredux by-name AT2025mav
+```
+
+## Installing and using a stable uvotredux release using pip with local HEASoft
+
+If you already have heasoft installed locally, you can also install `uvotredux` via pip:
+
+```bash
+pip install uvotredux
+```
+
+This will install the latest stable release of `uvotredux` from PyPI.
+
+Then you can set the data directory where you want to download/reduce the data:
+
+```bash
+export UVOTREDUX_DATA_DIR="/path/to/local/data"
+```
+
+and then run `uvotredux` with the desired arguments, e.g.:
+
+```bash
+uvotredux by-ra-dec 133.457 25.119
+```
+
+## Installing and using uvotredux in an editable state with Docker
+
+If you want to edit the code, you will still need a working docker installation of heasoft:
+
+```bash
+docker pull robertdstein/uvotredux:latest
+```
+
+Then, you can clone the repository somewhere on your machine:
 
 ```bash
 git clone https://github.com/robertdstein/uvotredux.git
@@ -55,140 +89,48 @@ git clone https://github.com/robertdstein/uvotredux.git
 Then, start the docker container with:
 
 ```bash
-docker run -it --rm -v /path/to/swift_data_sn2023uqf:/mydata -v /path/to/uvotredux:/uvotredux heasoft:v6.33 bash
+docker run --rm -it --entrypoint bash -v /path/to/local/data:/mydata -v /path/to/local/uvotredux:/uvotredux robertdstein/uvotredux:latest
 ```
 
-Then inside the docker container:
+This will mount your local data directory to `/mydata` in the container,
+and your local `uvotredux` directory to `/uvotredux` in the container.
+
+Then inside the docker container, you can install `uvotredux` in editable mode:
 
 ```bash
 export PATH="/home/heasoft/.local/bin:$PATH"
-cd /uvotredux
-pip install -e .
-cd /mydata 
+pip install -e /uvotredux
 ```
 
-### Installation locally
-You can instead install `HEASoft` locally, following the official guide: https://heasarc.gsfc.nasa.gov/docs/software/lheasoft/ . In that case, when you are done, run:
+And finally, within the docker container, you can run `uvotredux` commands as usual:
 
 ```bash
-pip install uvotredux
+uvotredux by-ra-dec 133.457 25.119
 ```
-
-And then navigate to the directory which either contains your data, or where you want to download the data.
 
 ## Using uvotredux
 
-Once you are in the data directory you created earlier 
-(either in the docker container or the local directory if you installed locally), 
-you can start downloading data.
+Uvotredux will download the data for you, if it is not already present in the specified data directory.
 
-### Downloading Data
+It will then iteratively reduce each image in the subfolders of the data directory.
 
-You can download data with:
-
-```bash
-uvotdownload --ra 133.457 --dec 25.119
-```
-
-or whatever the coordinates of your target are. 
-uvotredux will check the Swift archive, and download images.
-By default, it will not overwrite existing files, 
-but you can change that with `--overwrite`.
-
-In your directory, you should see a subdirectory for each visit.
-
-## Reducing Data
-
-You can then actually reduce the data. In the same directory, you can just run the reduction:
-
-```bash
-uvotredux
-```
-This will iteratively reduce each image in the subfolders, 
-and that is where you can find reduced images and source tables.
+**Make sure you have a fast internet connection, because the uvot pipeline can attempt to download calibration fits files that are >150Mb and downloads will time out eventually!**
 
 The code will scrape the output files of each individual image, 
 and produce a combined csv file with all the available info (`uvot_results.csv`).
-Beware: this file conrtains over a hundred columns per image.
+Beware: this file contains over a hundred columns per image.
 
 There is also a smaller file (`uvot_summary.csv`) that contains only the most important columns.
 
-**Make sure you have a fast internet connection, 
-because the uvot pipeline can attempt to download fits files >150Mb 
-and downloads will time out eventually!**
+### Checking the Results
 
-You can see additional options with:
+Imagine you reduced data for a target with the name `AT2025mav`.
 
-```bash
-uvotredux -h
-```
+You will see a directory created in your local data directory: `/path/to/local/data/AT2025mav` .
 
+In the directory there will be a subdirectory for each visit, as well as a `uvot_results.csv` and `uvot_summary.csv` file.
+There are also two region files (`src.reg` and `bkg.reg`) that were used extract the source and background regions.
 
-## Getting Data Manually
-
-## Getting Swift Data
-
-First check if your target has been observed: 
-https://www.swift.psu.edu/operations/obsSchedule.php
-You should see each visit listed.
-
-You might also see “SSA observations”, but no data is actually taken for those. 
-You should just ignore them.
-
-### Downloading Recent Data
-For very recent data (from ~2 hours to ~1 month), 
-you can download from the quicklook archive: https://swift.gsfc.nasa.gov/sdc/ql/
-
-You can search for your target, and then download the data.
-Make sure you tick the box to include UVOT data!
-
-You will get a tar file for each visit, which you can decompress.
-Place each decompressed directory in a parent directory. 
-Give the parent directory a name that is informative, e.g `swift_data_sn2023uqf`.
-
-
-### Downloading Old Data
-For old data, check the archive: https://www.swift.ac.uk/swift_portal/
-(After you found the archive data, download it as a tar/zip and make sure you tick the box to include UVOT data!)
-
-You will see a file named `download.tar` or `download.zip`. 
-I suggest renaming this to something more informative e.g `swift_data_sn2023uqf.zip` 
-or `swift_data_sn2023uqf.tar`.
-
-Finally, you should decompress your files. On mac/linux this is easy. 
-You will get a directory with the same name as the tar/zip file.
-
-## Setting up Extraction Regions
-Whether you downloaded recent or old data, the parent data directory is 
-where you can run the iterative data reduction. 
-It’ll look like:
-
-`swift_data_sn2023uqf/`
-- 00016282001
-- 00016282002
-- 00016282003
-- …
-
-And so on, with one subdirectory for each Swift visit of your target. 
-There are compressed images in these subdirectories, 
-but uvotredux will be able to unpack them for you automatically later on.
-
-In the directory `swift_data_sn2023uqf/`, 
-you need to create two .reg files. One is your source, 
-centered at the position with an appropriate radius. 
-The other is a background region, and that should be free of other sources!
-
-These files are just plain text files containing a single line, of the form:
-```txt
-fk5;circle(09:33:49.15,+25:06:56.86,3")
-```
-and
-```txt
-fk5;circle(43.45786323544644,25.119753601756596,12")
-```
-
-To test the extraction region, I suggest taking the reddest image, 
-uncompressing the _sk.img.gz file, and opening it in ds9. 
-Then you can overlay the regions to see if they are centered correctly.
-
-At this point, you are ready to reduce data!
+`uvotredux` generates these automatically. However, it is possible that an unrelated source is present in the background region.
+You can check this by opening up one of the uncompressed images in ds9, e.g `/path/to/local/data/AT2025mav/00019808001/uvot/image/UW2.fits`.
+You can then overlay the regions from the `src.reg` and `bkg.reg` files to see if they are centered correctly.
