@@ -98,7 +98,7 @@ def unpack_single_uvot_obs(
 
         try:
             execute_command(
-                cmd=f"uvotimsum {image} {uvot_save_path} < /dev/null",
+                cmd=f"uvotimsum {image} {uvot_save_path}",
                 output_path=uvot_save_path,
                 overwrite=overwrite,
             )
