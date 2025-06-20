@@ -24,6 +24,7 @@ jobs:
       - name: Echo workspace
         run: |
           echo "Workspace is ${{ github.workspace }}"
+          ls -la ${{ github.workspace }}
 
       - name: Install dependencies
         run: |
@@ -35,7 +36,7 @@ jobs:
           mkdir -p $UVOTREDUX_DATA_DIR
 
       - name: Run tests
-        working-directory: $UVOTREDUX_DATA_DIR
+        working-directory: /mydata
         run: coverage run -m unittest discover ${{ github.workspace }}/tests
 
       - name: Run Coveralls
