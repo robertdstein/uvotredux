@@ -4,6 +4,9 @@ on:
   push:
   pull_request:
 
+env:
+  HEADASPROMPT: /dev/null
+
 jobs:
   test:
     runs-on: ubuntu-latest
