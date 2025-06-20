@@ -9,6 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     container:
       image: robertdstein/heasoft:latest # Replace with your Docker image
+      options: --user root
 
     steps:
       - name: Check out code
