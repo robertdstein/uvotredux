@@ -5,7 +5,8 @@ on:
   pull_request:
 
 env:
-  HEADASPROMPT: /dev/null
+  HEADASPROMPT: /dev/null # Allows non-interactive use of HEASoft tools
+  UVOTREDUX_DATA_DIR: /data/uvotredux # Directory for UVOT data
 
 jobs:
   test:
