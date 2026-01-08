@@ -65,7 +65,7 @@ def create_regions(
         ra_str = c.ra.to_string(unit="hour", sep=":", precision=2)
         dec_str = c.dec.to_string(unit="deg", sep=":", precision=2)
         with open(src_region, "w", encoding="utf8") as f:
-            f.write(f'fk5;circle({ra_str},{dec_str},3")\n')
+            f.write(f'fk5;circle({ra_str},{dec_str},5")\n')
 
     if bkg_region.is_file() and not overwrite:
         logger.info(f"Skipping, background region file already exists: {bkg_region}")
