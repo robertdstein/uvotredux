@@ -53,6 +53,7 @@ jobs:
           tags: |
             ${{ env.REGISTRY_IMAGE }}:${{ steps.platform.outputs.tag_arch }}-${{ steps.meta.outputs.version }}
           labels: ${{ steps.meta.outputs.labels }}
+          provenance: false
 
   manifest:
     name: Create and Push Multi-Arch Manifest
