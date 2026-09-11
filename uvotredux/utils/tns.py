@@ -70,6 +70,13 @@ def download_tns(source_name: str) -> pd.Series:
     # Query TNS by name e.g "AT2020mni"
     df = query_tns_by_name(source_name)
 
+    # The TNS name search matches on prefix, e.g. searching for "2024as" also
+    # returns "2024asa", "2024asz", etc, so filter down to an exact match on
+    # the designation (ignoring the AT/SN/TDE/... prefix).
+    target = strip_tns_name(source_name)
+    if len(df) > 0:
+        df = df[df["Name"].apply(strip_tns_name) == target]
+
     # If no results found, try querying by internal name e.g "ZTF20abkavqj"
     if len(df) == 0:
         df = query_tns_by_name(source_name, internal_name_bool=True)
