@@ -6,7 +6,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from uvotredux.download.data import download_data
-from uvotredux.download.exceptions import SwiftAPIError
+from uvotredux.exceptions import SwiftAPIError
 
 
 class TestDownloadDataApiFailure(unittest.TestCase):

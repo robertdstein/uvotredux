@@ -1,5 +1,5 @@
 """
-Custom exceptions for the download module.
+Custom exceptions for uvotredux.
 """
 
 

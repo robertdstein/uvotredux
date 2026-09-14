@@ -7,7 +7,7 @@ from pathlib import Path
 
 from swifttools.swift_too import Data, ObsQuery
 
-from uvotredux.download.exceptions import SwiftAPIError
+from uvotredux.exceptions import SwiftAPIError
 
 logger = logging.getLogger(__name__)
 
