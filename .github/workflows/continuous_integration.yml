@@ -9,6 +9,7 @@ on:
 env:
   HEADASPROMPT: /dev/null # Allows non-interactive use of HEASoft tools
   UVOTREDUX_DATA_DIR: /mydata # Directory for UVOT data
+  COVERAGE_FILE: ${{ github.workspace }}/.coverage # Fixed path, since tests run with a different working directory
 
 jobs:
   test:
