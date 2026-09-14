@@ -6,6 +6,7 @@ import unittest
 from unittest.mock import MagicMock, patch
 
 from uvotredux.download.data import download_data
+from uvotredux.download.exceptions import SwiftAPIError
 
 
 class TestDownloadDataApiFailure(unittest.TestCase):
@@ -32,7 +33,7 @@ class TestDownloadDataApiFailure(unittest.TestCase):
         mock_oq.__len__.return_value = 0
         mock_obs_query.return_value = mock_oq
 
-        with self.assertRaises(RuntimeError) as context:
+        with self.assertRaises(SwiftAPIError) as context:
             download_data(ra=250.0767333333, dec=26.9258638889)
 
         self.assertIn("Job timed out.", str(context.exception))
