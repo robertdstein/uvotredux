@@ -7,6 +7,8 @@ from pathlib import Path
 
 from swifttools.swift_too import Data, ObsQuery
 
+from uvotredux.exceptions import SwiftAPIError
+
 logger = logging.getLogger(__name__)
 
 
@@ -32,6 +34,17 @@ def download_data(
     logger.info(f"Searching Swift data for {ra}, {dec}")
 
     oq = ObsQuery(ra=ra, dec=dec)
+
+    if not oq.status:
+        error_detail = (
+            "; ".join(oq.status.errors) if oq.status.errors else oq.status.status
+        ).rstrip(".")
+        logger.error(f"Swift observation query failed: {error_detail}")
+        raise SwiftAPIError(
+            f"Swift observation query failed (status={oq.status.status}): "
+            f"{error_detail}. The Swift TOO API may be temporarily "
+            "unavailable - please try again later."
+        )
 
     if len(oq) == 0:
         logger.error("No Swift observations found")
