@@ -33,6 +33,17 @@ def download_data(
 
     oq = ObsQuery(ra=ra, dec=dec)
 
+    if not oq.status:
+        error_detail = (
+            "; ".join(oq.status.errors) if oq.status.errors else oq.status.status
+        ).rstrip(".")
+        logger.error(f"Swift observation query failed: {error_detail}")
+        raise RuntimeError(
+            f"Swift observation query failed (status={oq.status.status}): "
+            f"{error_detail}. The Swift TOO API may be temporarily "
+            "unavailable - please try again later."
+        )
+
     if len(oq) == 0:
         logger.error("No Swift observations found")
         return
