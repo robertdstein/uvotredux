@@ -36,7 +36,6 @@ dependencies = [
 ]
 [project.optional-dependencies]
 field-sources = [
-    "astroquery",
     "photutils"
 ]
 dev = [

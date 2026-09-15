@@ -139,7 +139,7 @@ You can then overlay the regions from the `src.reg` and `bkg.reg` files to see i
 ### Automatically avoiding sources in the background region
 
 By default, the background region is placed at a fixed offset from the source.
-Passing `--avoid-sources` instead fetches a DSS cutout of the field, runs source detection on it,
+Passing `--avoid-sources` instead runs source detection on the real downloaded UVOT image,
 and picks a background position that avoids other detected sources, falling back to the default position
 if none can be found (or if detection is unavailable/fails for any reason):
 

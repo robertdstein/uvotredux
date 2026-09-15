@@ -37,12 +37,14 @@ def main(  # pylint: disable=too-many-arguments,too-many-positional-arguments
             dec_deg=dec_deg,
             output_dir=output_dir,
             overwrite=overwrite,
-            avoid_sources=avoid_sources,
         )
     else:
         logger.info("Skipping download, assuming data is already present.")
 
     iterate_uvot_reduction(
+        ra=ra_deg,
+        dec=dec_deg,
         directory=output_dir,
         overwrite=overwrite,
+        avoid_sources=avoid_sources,
     )
