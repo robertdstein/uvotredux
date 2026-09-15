@@ -66,6 +66,7 @@ extension-pkg-whitelist=["pydantic"]
 
 [tool.coverage.run]
 branch = true
+source = ["uvotredux"]
 
 [tool.coverage.report]
 # Regexes for lines to exclude from consideration
