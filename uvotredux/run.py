@@ -11,12 +11,13 @@ from uvotredux.uvot.iterate import iterate_uvot_reduction
 logger = logging.getLogger(__name__)
 
 
-def main(
+def main(  # pylint: disable=too-many-arguments,too-many-positional-arguments
     ra_deg: float,
     dec_deg: float,
     output_dir: Path,
     overwrite: bool = False,
     download: bool = True,
+    avoid_sources: bool = False,
 ):
     """
     Function to run Swift UVOT reduction on a directory
@@ -26,6 +27,8 @@ def main(
     :param output_dir: Directory to save the data
     :param overwrite: Overwrite existing files
     :param download: Whether to download the data or not
+    :param avoid_sources: Try to automatically place the background region
+        away from other detected sources in the field
     :return: None
     """
     if download:
@@ -34,6 +37,7 @@ def main(
             dec_deg=dec_deg,
             output_dir=output_dir,
             overwrite=overwrite,
+            avoid_sources=avoid_sources,
         )
     else:
         logger.info("Skipping download, assuming data is already present.")

@@ -135,3 +135,20 @@ There are also two region files (`src.reg` and `bkg.reg`) that were used extract
 `uvotredux` generates these automatically. However, it is possible that an unrelated source is present in the background region.
 You can check this by opening up one of the uncompressed images in ds9, e.g `/path/to/local/data/AT2025mav/00019808001/uvot/image/UW2.fits`.
 You can then overlay the regions from the `src.reg` and `bkg.reg` files to see if they are centered correctly.
+
+### Automatically avoiding sources in the background region
+
+By default, the background region is placed at a fixed offset from the source.
+Passing `--avoid-sources` instead fetches a DSS cutout of the field, runs source detection on it,
+and picks a background position that avoids other detected sources, falling back to the default position
+if none can be found (or if detection is unavailable/fails for any reason):
+
+```bash
+uvotredux by-name AT2025mav --avoid-sources
+```
+
+This requires the optional `field-sources` extra:
+
+```bash
+pip install uvotredux[field-sources]
+```

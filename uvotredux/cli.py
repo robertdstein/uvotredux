@@ -39,6 +39,16 @@ def shared_options(func):
         help="Overwrite existing files",
         default=False,
     )(func)
+    func = click.option(
+        "--avoid-sources",
+        is_flag=True,
+        default=False,
+        help=(
+            "Try to automatically place the background region away from "
+            "other detected sources in the field (requires the "
+            "'field-sources' extra: pip install uvotredux[field-sources])"
+        ),
+    )(func)
     return func
 
 
@@ -52,7 +62,13 @@ def cli():
 @cli.command("by-name")
 @click.argument("name", type=str)
 @shared_options
-def run_by_name(name: str, download: bool, swift_obs_dir: str | None, overwrite: bool):
+def run_by_name(
+    name: str,
+    download: bool,
+    swift_obs_dir: str | None,
+    overwrite: bool,
+    avoid_sources: bool,
+):
     """
     Run uvotredux by name.
     """
@@ -73,6 +89,7 @@ def run_by_name(name: str, download: bool, swift_obs_dir: str | None, overwrite:
         output_dir=output_dir,
         overwrite=overwrite,
         download=download,
+        avoid_sources=avoid_sources,
     )
 
 
@@ -80,12 +97,13 @@ def run_by_name(name: str, download: bool, swift_obs_dir: str | None, overwrite:
 @click.argument("ra_deg", type=str)
 @click.argument("dec_deg", type=str)
 @shared_options
-def run_by_ra_dec(
+def run_by_ra_dec(  # pylint: disable=too-many-arguments,too-many-positional-arguments
     ra_deg: float | str,
     dec_deg: float | str,
     download: bool,
     swift_obs_dir: str | None,
     overwrite: bool,
+    avoid_sources: bool,
 ):
     """
     Run uvotredux by RA and Dec.
@@ -95,6 +113,8 @@ def run_by_ra_dec(
     :param download: Whether to download the data or not
     :param swift_obs_dir: Base directory for Swift observations
     :param overwrite: Overwrite existing files
+    :param avoid_sources: Try to automatically place the background region
+        away from other detected sources in the field
 
     :return: None
     """
@@ -110,4 +130,5 @@ def run_by_ra_dec(
         output_dir=output_dir,
         overwrite=overwrite,
         download=download,
+        avoid_sources=avoid_sources,
     )

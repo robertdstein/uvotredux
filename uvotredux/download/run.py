@@ -16,6 +16,7 @@ def run_download(
     dec_deg: float,
     output_dir: Path,
     overwrite: bool = False,
+    avoid_sources: bool = False,
 ):
     """
     Function to download Swift data and create region files.
@@ -24,11 +25,19 @@ def run_download(
     :param dec_deg: Declination in degrees
     :param output_dir: Directory to save the data
     :param overwrite: Overwrite existing files
+    :param avoid_sources: Try to automatically place the background region
+        away from other detected sources in the field
     :return: None
     """
 
     # Create src.reg and bkg.reg files, if they don't already exist
-    create_regions(ra=ra_deg, dec=dec_deg, base_dir=output_dir, overwrite=overwrite)
+    create_regions(
+        ra=ra_deg,
+        dec=dec_deg,
+        base_dir=output_dir,
+        overwrite=overwrite,
+        avoid_sources=avoid_sources,
+    )
 
     # Download the data
     download_data(ra=ra_deg, dec=dec_deg, overwrite=overwrite, directory=output_dir)

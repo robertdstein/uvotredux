@@ -35,12 +35,17 @@ dependencies = [
     "swifttools>=3.0.0"
 ]
 [project.optional-dependencies]
+field-sources = [
+    "astroquery",
+    "photutils"
+]
 dev = [
     "black == 25.1.0",
     "isort == 6.0.1",
     "pylint == 3.3.7",
     "coveralls",
-    "pre-commit"
+    "pre-commit",
+    "uvotredux[field-sources]"
 ]
 
 [project.urls]
