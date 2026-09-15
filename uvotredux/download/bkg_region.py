@@ -72,7 +72,12 @@ def _detect_sources_in_image(image_path: Path) -> SkyCoord | None:
         y_col = "y_centroid" if "y_centroid" in sources.colnames else "ycentroid"
         return wcs.pixel_to_world(sources[x_col], sources[y_col])
 
-    except Exception as e:  # pylint: disable=broad-except
+    except (OSError, StopIteration) as e:
+        # OSError: image_path doesn't exist, or isn't a readable FITS file.
+        # StopIteration: the FITS file has no HDU containing image data.
+        # (WCS construction and the astropy.stats/photutils calls above
+        # don't raise on malformed input - they warn and return degenerate
+        # results - so there's nothing else worth catching here.)
         logger.warning(
             f"Could not run field source detection on {image_path} ({e}); "
             f"falling back to the default background position."
