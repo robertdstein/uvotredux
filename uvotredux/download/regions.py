@@ -146,14 +146,15 @@ def find_clear_background_position_angle(
             logger.info(
                 f"Found a background position at PA={position_angle:.1f} clear of "
                 f"{len(source_coords)} detected field source(s) "
-                f"(nearest at {min_sep:.1f})."
+                f"(nearest at {min_sep.to(u.arcsec):.1f})."  # pylint: disable=no-member
             )
             return position_angle
 
     logger.warning(
         f"Could not find a background position fully clear of "
         f"{len(source_coords)} detected field source(s); using the least "
-        f"crowded option (PA={best_pa:.1f}, nearest source at {best_min_sep:.1f})."
+        f"crowded option (PA={best_pa:.1f}, nearest source at "
+        f"{best_min_sep.to(u.arcsec):.1f})."  # pylint: disable=no-member
     )
     return best_pa
 

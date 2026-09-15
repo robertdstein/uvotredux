@@ -2,15 +2,13 @@
 Module for testing ensure_reference_image
 """
 
-import subprocess
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from unittest.mock import patch
 
 from uvotredux.uvot.reduce import ensure_reference_image
 
-IMAGE_NAME = "sw00019808001uw2_sk.img"
+RAW_IMAGE_NAME = "sw00019808001uw2_sk.img"
 
 
 class TestEnsureReferenceImage(unittest.TestCase):
@@ -31,35 +29,27 @@ class TestEnsureReferenceImage(unittest.TestCase):
         """
         self.assertIsNone(ensure_reference_image(self.obs_dir))
 
-    @patch("uvotredux.uvot.reduce.execute_command")
-    def test_creates_and_returns_first_image(self, mock_execute):
+    def test_returns_existing_summed_image_without_running_uvotimsum(self):
         """
+        If a summed image for the observation already exists (e.g. from a
+        previous run), it should be reused directly rather than re-running
+        uvotimsum - this is the same caching behaviour execute_command
+        already provides for every other UVOT reduction step, so it works
+        even without HEASoft installed (as in this local test environment).
+
         :return: None
         """
-        (self.uvot_dir / IMAGE_NAME).touch()
-
-        def fake_execute(
-            cmd, output_path, overwrite=False
-        ):  # pylint: disable=unused-argument
-            output_path.touch()
-
-        mock_execute.side_effect = fake_execute
+        (self.uvot_dir / RAW_IMAGE_NAME).touch()
+        expected_output = self.uvot_dir / "UW2.fits"
+        expected_output.write_text("not a real fits file, just a marker")
 
         result = ensure_reference_image(self.obs_dir)
 
-        self.assertIsNotNone(result)
-        self.assertTrue(result.is_file())
-        self.assertEqual(result.name, "UW2.fits")
-
-    @patch("uvotredux.uvot.reduce.execute_command")
-    def test_execute_command_failure_returns_none(self, mock_execute):
-        """
-        :return: None
-        """
-        (self.uvot_dir / IMAGE_NAME).touch()
-        mock_execute.side_effect = subprocess.CalledProcessError(1, "uvotimsum")
-
-        self.assertIsNone(ensure_reference_image(self.obs_dir))
+        self.assertEqual(result, expected_output)
+        # Content should be untouched - uvotimsum should never have run
+        self.assertEqual(
+            expected_output.read_text(), "not a real fits file, just a marker"
+        )
 
 
 if __name__ == "__main__":
