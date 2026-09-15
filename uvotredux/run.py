@@ -39,6 +39,8 @@ def main(
         logger.info("Skipping download, assuming data is already present.")
 
     iterate_uvot_reduction(
+        ra=ra_deg,
+        dec=dec_deg,
         directory=output_dir,
         overwrite=overwrite,
     )

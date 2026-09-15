@@ -5,15 +5,18 @@ Module to iterate over all the Swift UVOT observations in a directory and unpack
 import logging
 from pathlib import Path
 
-from uvotredux.download.regions import bkg_path, src_path
+from uvotredux.download.bkg_region import bkg_path, make_bkg_region
+from uvotredux.download.source_region import src_path
 from uvotredux.utils import get_observation_dirs
 from uvotredux.uvot.parse import parse_uvot_results
-from uvotredux.uvot.reduce import unpack_single_uvot_obs
+from uvotredux.uvot.reduce import ensure_reference_image, unpack_single_uvot_obs
 
 logger = logging.getLogger(__name__)
 
 
 def iterate_uvot_reduction(
+    ra: float,
+    dec: float,
     directory: Path | None = None,
     overwrite: bool = False,
     skyportal: bool = False,
@@ -21,6 +24,8 @@ def iterate_uvot_reduction(
     """
     Function to unpack all the swift observations in a directory
 
+    :param ra: Right Ascension of the target in degrees
+    :param dec: Declination of the target in degrees
     :param directory: Directory containing the swift observations
     :param overwrite: Overwrite existing files
     :param skyportal: Convert the results to SkyPortal format
@@ -42,11 +47,22 @@ def iterate_uvot_reduction(
         )
 
     src_region_path = src_path(directory)
-    bkg_region_path = bkg_path(directory)
+    if not src_region_path.is_file():
+        raise FileNotFoundError(f"Region file {src_region_path} not found")
 
-    for path in [src_region_path, bkg_region_path]:
-        if not path.is_file():
-            raise FileNotFoundError(f"Region file {path} not found")
+    bkg_region_path = bkg_path(directory)
+    if not bkg_region_path.is_file() or overwrite:
+        # A real image of the field is needed to check for other sources,
+        # so make sure at least one exists before placing the background
+        # region.
+        reference_image = ensure_reference_image(sorted(all_swift_obs)[0])
+        make_bkg_region(
+            ra=ra,
+            dec=dec,
+            base_dir=directory,
+            overwrite=overwrite,
+            image_path=reference_image,
+        )
 
     for swift_obs in sorted(all_swift_obs):
         unpack_single_uvot_obs(
