@@ -5,7 +5,8 @@ Module to iterate over all the Swift UVOT observations in a directory and unpack
 import logging
 from pathlib import Path
 
-from uvotredux.download.regions import bkg_path, make_bkg_region, src_path
+from uvotredux.download.bkg_region import bkg_path, make_bkg_region
+from uvotredux.download.source_region import src_path
 from uvotredux.utils import get_observation_dirs
 from uvotredux.uvot.parse import parse_uvot_results
 from uvotredux.uvot.reduce import ensure_reference_image, unpack_single_uvot_obs
@@ -13,13 +14,12 @@ from uvotredux.uvot.reduce import ensure_reference_image, unpack_single_uvot_obs
 logger = logging.getLogger(__name__)
 
 
-def iterate_uvot_reduction(  # pylint: disable=too-many-arguments,too-many-positional-arguments
+def iterate_uvot_reduction(
     ra: float,
     dec: float,
     directory: Path | None = None,
     overwrite: bool = False,
     skyportal: bool = False,
-    avoid_sources: bool = False,
 ):
     """
     Function to unpack all the swift observations in a directory
@@ -29,8 +29,6 @@ def iterate_uvot_reduction(  # pylint: disable=too-many-arguments,too-many-posit
     :param directory: Directory containing the swift observations
     :param overwrite: Overwrite existing files
     :param skyportal: Convert the results to SkyPortal format
-    :param avoid_sources: Try to automatically place the background region
-        away from other sources detected in a real UVOT image of the field
     :return: None
     """
 
@@ -63,7 +61,6 @@ def iterate_uvot_reduction(  # pylint: disable=too-many-arguments,too-many-posit
             dec=dec,
             base_dir=directory,
             overwrite=overwrite,
-            avoid_sources=avoid_sources,
             image_path=reference_image,
         )
 

@@ -6,7 +6,7 @@ import logging
 from pathlib import Path
 
 from uvotredux.download.data import download_data
-from uvotredux.download.regions import make_source_region
+from uvotredux.download.source_region import make_source_region
 
 logger = logging.getLogger(__name__)
 

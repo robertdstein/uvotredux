@@ -1,5 +1,5 @@
 """
-Module to create region files for the Swift UVOT observations
+Module to create the background region file for the Swift UVOT observations
 """
 
 import logging
@@ -7,6 +7,10 @@ from pathlib import Path
 
 from astropy import units as u
 from astropy.coordinates import SkyCoord
+from astropy.io import fits
+from astropy.stats import sigma_clipped_stats
+from astropy.wcs import WCS
+from photutils.detection import DAOStarFinder
 
 logger = logging.getLogger(__name__)
 
@@ -25,17 +29,6 @@ SOURCE_AVOIDANCE_RADIUS = 15 * u.arcsec  # pylint: disable=no-member
 POSITION_ANGLE_STEP = 15 * u.deg  # pylint: disable=no-member
 
 
-def src_path(base_dir: Path) -> Path:
-    """
-    Function to get the path to the src.reg file
-
-    :param base_dir: Base directory to create the region files
-
-    :return: Path to the src.reg file
-    """
-    return base_dir / "src.reg"
-
-
 def bkg_path(base_dir: Path) -> Path:
     """
     Function to get the path to the bkg.reg file
@@ -47,9 +40,7 @@ def bkg_path(base_dir: Path) -> Path:
     return base_dir / "bkg.reg"
 
 
-def _detect_sources_in_image(  # pylint: disable=too-many-locals
-    image_path: Path,
-) -> SkyCoord | None:
+def _detect_sources_in_image(image_path: Path) -> SkyCoord | None:
     """
     Run source detection on a real UVOT image, so the background region can
     be placed to avoid other sources visible in that same filter/field.
@@ -57,18 +48,10 @@ def _detect_sources_in_image(  # pylint: disable=too-many-locals
     :param image_path: Path to a summed UVOT image (e.g. produced by
         uvotimsum), with a valid WCS
 
-    :return: Sky positions of detected sources, or None if detection was
-        unavailable, failed, or found nothing
+    :return: Sky positions of detected sources, or None if detection
+        failed or found nothing
     """
     try:
-        # Imports are local: photutils is an optional dependency, only
-        # required for this (opt-in) feature.
-        # pylint: disable=import-outside-toplevel
-        from astropy.io import fits
-        from astropy.stats import sigma_clipped_stats
-        from astropy.wcs import WCS
-        from photutils.detection import DAOStarFinder
-
         with fits.open(image_path) as hdul:
             hdu = next(h for h in hdul if h.data is not None)
             wcs = WCS(hdu.header)
@@ -120,9 +103,9 @@ def find_clear_background_position_angle(
     `coord`, whose background aperture avoids other sources detected in a
     real UVOT image of the field.
 
-    This is a best-effort enhancement: if source detection is unavailable or
-    fails for any reason (missing optional dependency, unreadable image,
-    etc.), it logs a warning and falls back to DEFAULT_BKG_POSITION_ANGLE.
+    This is a best-effort enhancement: if source detection fails for any
+    reason (unreadable image, no WCS, etc.), it logs a warning and falls
+    back to DEFAULT_BKG_POSITION_ANGLE.
 
     :param coord: Sky position of the target
     :param image_path: Path to a summed UVOT image of the field
@@ -159,62 +142,27 @@ def find_clear_background_position_angle(
     return best_pa
 
 
-def make_source_region(
+def make_bkg_region(
     ra: float,
     dec: float,
     base_dir: Path | None = None,
     overwrite: bool = False,
-):
-    """
-    Function to create the source region file for the Swift observations
-
-    :param ra: Right Ascension in degrees
-    :param dec: Declination in degrees
-    :param base_dir: Base directory to create the region file
-    :param overwrite: Overwrite existing file
-
-    :return: None
-    """
-
-    if base_dir is None:
-        base_dir = Path.cwd()
-
-    src_region = src_path(base_dir)
-
-    if src_region.is_file() and not overwrite:
-        logger.info(f"Skipping, source region file already exists: {src_region}")
-        return
-
-    logger.info(f"Creating source region file: {src_region}")
-
-    c = SkyCoord(ra=ra, dec=dec, unit="deg")
-    ra_str = c.ra.to_string(unit="hour", sep=":", precision=2)
-    dec_str = c.dec.to_string(unit="deg", sep=":", precision=2)
-    with open(src_region, "w", encoding="utf8") as f:
-        f.write(f'fk5;circle({ra_str},{dec_str},3")\n')
-
-
-def make_bkg_region(  # pylint: disable=too-many-arguments,too-many-positional-arguments
-    ra: float,
-    dec: float,
-    base_dir: Path | None = None,
-    overwrite: bool = False,
-    avoid_sources: bool = False,
     image_path: Path | None = None,
 ):
     """
-    Function to create the background region file for the Swift observations
+    Function to create the background region file for the Swift observations.
+
+    By default, the background region is automatically placed away from
+    other sources detected in `image_path`, falling back to a fixed offset
+    if no image is given or if detection fails. If a background region file
+    already exists and overwrite is False, it is left untouched.
 
     :param ra: Right Ascension in degrees
     :param dec: Declination in degrees
     :param base_dir: Base directory to create the region file
     :param overwrite: Overwrite existing file
-    :param avoid_sources: Try to automatically place the background region
-        away from other sources detected in `image_path` (requires the
-        optional photutils dependency; falls back to the default fixed
-        position if unavailable, if it fails, or if no image is given)
-    :param image_path: Path to a real UVOT image of the field, used for
-        source detection when avoid_sources is True
+    :param image_path: Path to a real UVOT image of the field, used to
+        detect other sources to avoid
 
     :return: None
     """
@@ -232,14 +180,13 @@ def make_bkg_region(  # pylint: disable=too-many-arguments,too-many-positional-a
 
     c = SkyCoord(ra=ra, dec=dec, unit="deg")
 
-    if avoid_sources and image_path is not None:
+    if image_path is not None:
         position_angle = find_clear_background_position_angle(c, image_path)
     else:
-        if avoid_sources:
-            logger.warning(
-                "No reference image available to check for field sources; "
-                "using the default background position."
-            )
+        logger.warning(
+            "No reference image available to check for field sources; "
+            "using the default background position."
+        )
         position_angle = DEFAULT_BKG_POSITION_ANGLE
 
     c2 = c.directional_offset_by(position_angle, BKG_SEPARATION)
@@ -257,29 +204,3 @@ def make_bkg_region(  # pylint: disable=too-many-arguments,too-many-positional-a
     bkg_radius_arcsec = BKG_RADIUS.to_value(u.arcsec)  # pylint: disable=no-member
     with open(bkg_region, "w", encoding="utf8") as f:
         f.write(f'fk5;circle({ra_str},{dec_str},{bkg_radius_arcsec:.0f}")\n')
-
-
-def load_region(
-    base_dir: Path | None = None,
-) -> tuple[float, float]:
-    """
-    Load the source region file and return the coordinates
-
-    :param base_dir: Base directory containing region files
-    :return:
-    """
-
-    if base_dir is None:
-        base_dir = Path.cwd()
-
-    src_region = src_path(base_dir)
-    with open(src_region, "r", encoding="utf8") as f:
-        line = f.readlines()[0]
-
-    vals = line.split("(")[1].split(",")
-    c = SkyCoord(
-        ra=vals[0],
-        dec=vals[1],
-        unit=(u.hourangle, u.deg),  # pylint: disable=no-member
-    )
-    return c.ra.degree, c.dec.degree

@@ -12,7 +12,7 @@ from astropy.coordinates import SkyCoord
 from click.testing import CliRunner
 
 from uvotredux.cli import cli
-from uvotredux.download.regions import find_clear_background_position_angle
+from uvotredux.download.bkg_region import find_clear_background_position_angle
 from uvotredux.paths import get_output_dir
 from uvotredux.utils import get_observation_dirs
 from uvotredux.utils.name import assign_source_name

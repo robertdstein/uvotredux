@@ -7,7 +7,8 @@ import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
 
-from uvotredux.download.regions import bkg_path, make_source_region
+from uvotredux.download.bkg_region import bkg_path
+from uvotredux.download.source_region import make_source_region
 from uvotredux.uvot.iterate import iterate_uvot_reduction
 
 TEST_RA, TEST_DEC = 250.0767333333, 26.9258638889

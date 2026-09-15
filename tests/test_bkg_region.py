@@ -1,6 +1,7 @@
 """
-Module for testing make_source_region/make_bkg_region and the fallback
-behaviour of automatic background-region placement
+Module for testing make_bkg_region and find_clear_background_position_angle's
+fallback behaviour. (The actual source-avoidance behaviour, against a real
+UVOT image, is checked in tests/test_run.py using real downloaded data.)
 """
 
 import os
@@ -11,13 +12,11 @@ from tempfile import TemporaryDirectory
 from astropy import units as u
 from astropy.coordinates import SkyCoord
 
-from uvotredux.download.regions import (
+from uvotredux.download.bkg_region import (
     DEFAULT_BKG_POSITION_ANGLE,
     bkg_path,
     find_clear_background_position_angle,
     make_bkg_region,
-    make_source_region,
-    src_path,
 )
 
 TEST_RA, TEST_DEC = 250.0767333333, 26.9258638889
@@ -26,9 +25,7 @@ TEST_RA, TEST_DEC = 250.0767333333, 26.9258638889
 class TestFindClearBackgroundPositionAngle(unittest.TestCase):
     """
     Class for testing find_clear_background_position_angle's fallback
-    behaviour. (The actual source-avoidance behaviour, against a real UVOT
-    image, is checked in tests/test_run.py using the real downloaded data
-    for that test - see the DSS-vs-real-image discussion in PR #47.)
+    behaviour
     """
 
     def test_missing_image_falls_back_to_default(self):
@@ -60,10 +57,10 @@ class TestMakeBkgRegion(unittest.TestCase):
         self.addCleanup(self.tmp_dir.cleanup)
         self.base_dir = Path(self.tmp_dir.name)
 
-    def test_avoid_sources_without_image_falls_back_to_default(self):
+    def test_without_image_falls_back_to_default(self):
         """
-        avoid_sources=True with no image available should still produce a
-        background region, using the default position.
+        With no image available, a background region should still be
+        produced, using the default position.
 
         :return: None
         """
@@ -71,7 +68,6 @@ class TestMakeBkgRegion(unittest.TestCase):
             ra=TEST_RA,
             dec=TEST_DEC,
             base_dir=self.base_dir,
-            avoid_sources=True,
             image_path=None,
         )
 
@@ -99,7 +95,7 @@ class TestMakeBkgRegion(unittest.TestCase):
 
     def test_default_output(self):
         """
-        The default (avoid_sources=False) behaviour should be the fixed
+        With no image given, the background region should be at the fixed
         45 degree offset.
 
         :return: None
@@ -112,8 +108,8 @@ class TestMakeBkgRegion(unittest.TestCase):
 
 class TestDefaultBaseDir(unittest.TestCase):
     """
-    Class for testing that make_source_region/make_bkg_region default to
-    the current working directory when base_dir is not given
+    Class for testing that make_bkg_region defaults to the current working
+    directory when base_dir is not given
     """
 
     def setUp(self):
@@ -122,13 +118,6 @@ class TestDefaultBaseDir(unittest.TestCase):
         self._original_cwd = Path.cwd()
         os.chdir(self.tmp_dir.name)
         self.addCleanup(os.chdir, self._original_cwd)
-
-    def test_make_source_region_defaults_to_cwd(self):
-        """
-        :return: None
-        """
-        make_source_region(ra=TEST_RA, dec=TEST_DEC)
-        self.assertTrue(src_path(Path.cwd()).is_file())
 
     def test_make_bkg_region_defaults_to_cwd(self):
         """

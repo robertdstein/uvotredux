@@ -32,19 +32,16 @@ dependencies = [
     "pathlib",
     "astropy>=6.0.0",
     "pandas",
-    "swifttools>=3.0.0"
-]
-[project.optional-dependencies]
-field-sources = [
+    "swifttools>=3.0.0",
     "photutils"
 ]
+[project.optional-dependencies]
 dev = [
     "black == 25.1.0",
     "isort == 6.0.1",
     "pylint == 3.3.7",
     "coveralls",
-    "pre-commit",
-    "uvotredux[field-sources]"
+    "pre-commit"
 ]
 
 [project.urls]
