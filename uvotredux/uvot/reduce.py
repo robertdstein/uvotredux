@@ -9,7 +9,7 @@ import logging
 import subprocess
 from pathlib import Path
 
-from uvotredux.uvot.filters import filter_dict
+from uvotredux.uvot.filters import get_uvot_filter
 
 logger = logging.getLogger(__name__)
 
@@ -93,7 +93,10 @@ def unpack_single_uvot_obs(
     logger.info(f"Found {len(swift_images)} images")
 
     for image in swift_images:
-        uvot_filter = filter_dict[image.name[14:16]]
+        uvot_filter = get_uvot_filter(image)
+        if uvot_filter is None:
+            logger.warning(f"Skipping non-imaging UVOT file (e.g. grism): {image}")
+            continue
         uvot_save_path = uvot_dir / f"{uvot_filter}.fits"
 
         try:
