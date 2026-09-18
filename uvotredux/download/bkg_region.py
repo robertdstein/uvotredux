@@ -37,7 +37,7 @@ def bkg_path(base_dir: Path) -> Path:
     return base_dir / "bkg.reg"
 
 
-def _detect_sources_in_image(image_path: Path) -> SkyCoord | None:
+def detect_sources_in_image(image_path: Path) -> SkyCoord | None:
     """
     Run source detection on a real UVOT image, so the background region can
     be placed to avoid other sources visible in that same filter/field.
@@ -81,7 +81,7 @@ def _detect_sources_in_image(image_path: Path) -> SkyCoord | None:
         return None
 
 
-def _candidate_position_angles() -> list[u.Quantity]:
+def candidate_position_angles() -> list[u.Quantity]:
     """
     Position angles to try, starting at DEFAULT_BKG_POSITION_ANGLE and
     spiralling outwards in steps of POSITION_ANGLE_STEP.
@@ -113,13 +113,13 @@ def find_clear_background_position_angle(
 
     :return: Position angle to use for the background region
     """
-    source_coords = _detect_sources_in_image(image_path)
+    source_coords = detect_sources_in_image(image_path)
     if source_coords is None:
         return DEFAULT_BKG_POSITION_ANGLE
 
     worst_separation = -1 * u.arcsec  # pylint: disable=no-member
     best_pa, best_min_sep = DEFAULT_BKG_POSITION_ANGLE, worst_separation
-    for position_angle in _candidate_position_angles():
+    for position_angle in candidate_position_angles():
         candidate = coord.directional_offset_by(position_angle, BKG_SEPARATION)
         min_sep = candidate.separation(source_coords).min()
 

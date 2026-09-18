@@ -18,9 +18,9 @@ from uvotredux.download.bkg_region import (
     BKG_SEPARATION,
     DEFAULT_BKG_POSITION_ANGLE,
     SOURCE_AVOIDANCE_RADIUS,
-    _candidate_position_angles,
-    _detect_sources_in_image,
     bkg_path,
+    candidate_position_angles,
+    detect_sources_in_image,
     find_clear_background_position_angle,
     make_bkg_region,
 )
@@ -54,9 +54,9 @@ class TestFindClearBackgroundPositionAngle(unittest.TestCase):
             places=3,
         )
 
-    # The two tests below mock _detect_sources_in_image - see each docstring.
+    # The two tests below mock detect_sources_in_image - see each docstring.
 
-    @patch("uvotredux.download.bkg_region._detect_sources_in_image")
+    @patch("uvotredux.download.bkg_region.detect_sources_in_image")
     def test_source_blocking_default_is_avoided(self, mock_detect):
         """
         A source at exactly the default background position should cause a
@@ -88,7 +88,7 @@ class TestFindClearBackgroundPositionAngle(unittest.TestCase):
             candidate.separation(blocked_source), SOURCE_AVOIDANCE_RADIUS
         )
 
-    @patch("uvotredux.download.bkg_region._detect_sources_in_image")
+    @patch("uvotredux.download.bkg_region.detect_sources_in_image")
     def test_every_candidate_blocked_returns_least_crowded(self, mock_detect):
         """
         If every candidate position angle has a source on it, the function
@@ -105,7 +105,7 @@ class TestFindClearBackgroundPositionAngle(unittest.TestCase):
         blocked_sources = SkyCoord(
             [
                 self.coord.directional_offset_by(pa, BKG_SEPARATION)
-                for pa in _candidate_position_angles()
+                for pa in candidate_position_angles()
             ]
         )
         mock_detect.return_value = blocked_sources
@@ -123,7 +123,7 @@ class TestFindClearBackgroundPositionAngle(unittest.TestCase):
 
 class TestDetectSourcesInImage(unittest.TestCase):
     """
-    Class for testing _detect_sources_in_image's error handling on genuinely
+    Class for testing detect_sources_in_image's error handling on genuinely
     real (if deliberately unusual) FITS input - no mocking needed, since a
     real data-less FITS file is easy to construct directly.
     """
@@ -139,7 +139,7 @@ class TestDetectSourcesInImage(unittest.TestCase):
             image_path = Path(tmp_dir) / "empty.fits"
             fits.PrimaryHDU(data=None).writeto(image_path)
 
-            self.assertIsNone(_detect_sources_in_image(image_path))
+            self.assertIsNone(detect_sources_in_image(image_path))
 
 
 class TestMakeBkgRegion(unittest.TestCase):
