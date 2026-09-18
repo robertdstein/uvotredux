@@ -54,13 +54,7 @@ class TestFindClearBackgroundPositionAngle(unittest.TestCase):
             places=3,
         )
 
-    # The two tests below mock _detect_sources_in_image rather than pointing
-    # it at a real image, because they need to control exactly which sky
-    # positions come back as "detected sources" - something no single real
-    # UVOT exposure can be relied on to provide on demand (tests/test_run.py
-    # already exercises this function for real, against a genuine UVOT
-    # image, but that real field happens to leave the default position
-    # clear - there's no real fixture available where it doesn't).
+    # The two tests below mock _detect_sources_in_image - see each docstring.
 
     @patch("uvotredux.download.bkg_region._detect_sources_in_image")
     def test_source_blocking_default_is_avoided(self, mock_detect):

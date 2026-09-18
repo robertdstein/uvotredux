@@ -59,9 +59,7 @@ class TestUVOTRedux(unittest.TestCase):
 
         pd.testing.assert_frame_equal(df, expected_df)
 
-        # Also check automatic background-region source avoidance against
-        # the real UVOT image just downloaded/reduced above - no synthetic
-        # data or mocking, this is the actual real image for this target.
+        # Also check source avoidance against the real image just reduced above.
         logger.info("Checking automatic background-region source avoidance")
 
         output_dir = get_output_dir(source_name)

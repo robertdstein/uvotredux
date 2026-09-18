@@ -14,18 +14,15 @@ from photutils.detection import DAOStarFinder
 
 logger = logging.getLogger(__name__)
 
-# Defaults for the background region: a fixed offset from the source,
-# at a 45 degree position angle.
+# Default background region: fixed offset from the source, 45 degree PA.
 BKG_SEPARATION = 50 * u.arcsec  # pylint: disable=no-member
 BKG_RADIUS = 10 * u.arcsec  # pylint: disable=no-member
 DEFAULT_BKG_POSITION_ANGLE = 45 * u.deg  # pylint: disable=no-member
 
-# How far a candidate background aperture must be from any detected field
-# source to be considered "clear" of it.
+# Minimum separation from a detected source for a candidate to be "clear".
 SOURCE_AVOIDANCE_RADIUS = 15 * u.arcsec  # pylint: disable=no-member
 
-# Position angles are tried in steps of this size, spiralling outwards from
-# DEFAULT_BKG_POSITION_ANGLE, until a clear one is found.
+# Step size when spiralling outward from DEFAULT_BKG_POSITION_ANGLE.
 POSITION_ANGLE_STEP = 15 * u.deg  # pylint: disable=no-member
 
 
@@ -50,6 +47,9 @@ def _detect_sources_in_image(image_path: Path) -> SkyCoord | None:
 
     :return: Sky positions of detected sources, or None if detection
         failed or found nothing
+
+    Only OSError/StopIteration are caught below (bad file, no data HDU) -
+    the astropy.stats/photutils calls warn rather than raise on bad input.
     """
     try:
         with fits.open(image_path) as hdul:
@@ -73,11 +73,7 @@ def _detect_sources_in_image(image_path: Path) -> SkyCoord | None:
         return wcs.pixel_to_world(sources[x_col], sources[y_col])
 
     except (OSError, StopIteration) as e:
-        # OSError: image_path doesn't exist, or isn't a readable FITS file.
-        # StopIteration: the FITS file has no HDU containing image data.
-        # (WCS construction and the astropy.stats/photutils calls above
-        # don't raise on malformed input - they warn and return degenerate
-        # results - so there's nothing else worth catching here.)
+        # See docstring: these are the only exceptions this can raise.
         logger.warning(
             f"Could not run field source detection on {image_path} ({e}); "
             f"falling back to the default background position."

@@ -52,9 +52,7 @@ def iterate_uvot_reduction(
 
     bkg_region_path = bkg_path(directory)
     if not bkg_region_path.is_file() or overwrite:
-        # A real image of the field is needed to check for other sources,
-        # so make sure at least one exists before placing the background
-        # region.
+        # Need a real image to check for other sources before placing bkg.reg.
         reference_image = ensure_reference_image(sorted(all_swift_obs)[0])
         make_bkg_region(
             ra=ra,
