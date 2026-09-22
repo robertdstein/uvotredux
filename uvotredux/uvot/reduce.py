@@ -71,6 +71,37 @@ def unpack_uvot_images(
     return swift_images
 
 
+def ensure_reference_image(swift_obs_dir: Path) -> Path | None:
+    """
+    Make sure at least one summed UVOT image exists for this observation,
+    creating one if necessary. Used to obtain a real image of the field to
+    check for other sources before placing the background region.
+
+    :param swift_obs_dir: Single swift observation directory
+    :return: Path to a summed UVOT image, or None if none could be created
+    """
+    uvot_dir = swift_obs_dir / "uvot/image"
+
+    swift_images = unpack_uvot_images(uvot_dir)
+    if len(swift_images) == 0:
+        return None
+
+    image = sorted(swift_images)[0]
+    uvot_filter = filter_dict[image.name[14:16]]
+    uvot_save_path = uvot_dir / f"{uvot_filter}.fits"
+
+    try:
+        execute_command(
+            cmd=f"uvotimsum {image} {uvot_save_path}",
+            output_path=uvot_save_path,
+        )
+    except subprocess.CalledProcessError as e:
+        logger.error(f"Error creating reference UVOT image: {e}")
+        return None
+
+    return uvot_save_path if uvot_save_path.is_file() else None
+
+
 def unpack_single_uvot_obs(
     swift_obs_dir: Path,
     src_region_path: Path,

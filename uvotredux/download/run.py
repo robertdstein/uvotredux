@@ -6,7 +6,7 @@ import logging
 from pathlib import Path
 
 from uvotredux.download.data import download_data
-from uvotredux.download.regions import create_regions
+from uvotredux.download.source_region import make_source_region
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +18,11 @@ def run_download(
     overwrite: bool = False,
 ):
     """
-    Function to download Swift data and create region files.
+    Function to download Swift data and create the source region file.
+
+    The background region is created later, once real image data is
+    available to check for other sources in the field (see
+    uvotredux.uvot.iterate.iterate_uvot_reduction).
 
     :param ra_deg: Right Ascension in degrees
     :param dec_deg: Declination in degrees
@@ -27,8 +31,13 @@ def run_download(
     :return: None
     """
 
-    # Create src.reg and bkg.reg files, if they don't already exist
-    create_regions(ra=ra_deg, dec=dec_deg, base_dir=output_dir, overwrite=overwrite)
+    # Create src.reg, if it doesn't already exist
+    make_source_region(
+        ra=ra_deg,
+        dec=dec_deg,
+        base_dir=output_dir,
+        overwrite=overwrite,
+    )
 
     # Download the data
     download_data(ra=ra_deg, dec=dec_deg, overwrite=overwrite, directory=output_dir)
