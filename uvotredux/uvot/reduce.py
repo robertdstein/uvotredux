@@ -63,9 +63,14 @@ def unpack_uvot_images(
         uncompressed_image = image.with_suffix("")
         if not uncompressed_image.is_file():
             logger.info(f"Uncompressing image: {image}")
-            with gzip.open(image, "rb") as f_in:
-                with open(uncompressed_image, "wb") as f_out:
-                    f_out.write(f_in.read())
+            try:
+                with gzip.open(image, "rb") as f_in:
+                    data = f_in.read()
+            except gzip.BadGzipFile:
+                logger.warning(f"Skipping image that is not a valid gzip file: {image}")
+                continue
+            with open(uncompressed_image, "wb") as f_out:
+                f_out.write(data)
             swift_images.append(uncompressed_image)
 
     return swift_images
