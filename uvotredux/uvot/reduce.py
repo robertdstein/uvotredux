@@ -6,15 +6,12 @@ Updated by Robert Stein on 2024-03-08 to use python3, pathlib, f-strings and gzi
 
 import gzip
 import logging
-import shutil
 import subprocess
 from pathlib import Path
 
 from uvotredux.uvot.filters import get_uvot_filter
 
 logger = logging.getLogger(__name__)
-
-GZIP_MAGIC = b"\x1f\x8b"
 
 
 def execute_command(
@@ -65,16 +62,15 @@ def unpack_uvot_images(
     for image in swift_compressed_images:
         uncompressed_image = image.with_suffix("")
         if not uncompressed_image.is_file():
-            with open(image, "rb") as f_in:
-                is_gzipped = f_in.read(2) == GZIP_MAGIC
-            if is_gzipped:
-                logger.info(f"Uncompressing image: {image}")
+            logger.info(f"Uncompressing image: {image}")
+            try:
                 with gzip.open(image, "rb") as f_in:
-                    with open(uncompressed_image, "wb") as f_out:
-                        f_out.write(f_in.read())
-            else:
+                    data = f_in.read()
+            except gzip.BadGzipFile:
                 logger.warning(f"Image is named .gz but not compressed: {image}")
-                shutil.copyfile(image, uncompressed_image)
+                data = image.read_bytes()
+            with open(uncompressed_image, "wb") as f_out:
+                f_out.write(data)
             swift_images.append(uncompressed_image)
 
     return swift_images
