@@ -35,7 +35,8 @@ def execute_command(
         logger.info(f"UVOT file already exists: {output_path}")
     else:
         logger.info(f"Executing command: '{cmd}'")
-        subprocess.run(cmd, shell=True, check=True)
+        # HEASoft tools write scratch files to the cwd, which may not be writable.
+        subprocess.run(cmd, shell=True, check=True, cwd=output_path.parent)
         logger.info(f"UVOT file created at: {output_path}")
 
     if not output_path.is_file():
