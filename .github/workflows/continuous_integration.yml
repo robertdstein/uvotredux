@@ -10,6 +10,7 @@ env:
   HEADASPROMPT: /dev/null # Allows non-interactive use of HEASoft tools
   UVOTREDUX_DATA_DIR: /mydata # Directory for UVOT data
   COVERAGE_FILE: ${{ github.workspace }}/.coverage # Fixed path, since tests run with a different working directory
+  COVERAGE_RCFILE: ${{ github.workspace }}/pyproject.toml # Tests run outside the repo, so coverage would not find it
 
 jobs:
   test:
