@@ -32,7 +32,8 @@ dependencies = [
     "pathlib",
     "astropy>=6.0.0",
     "pandas",
-    "swifttools>=3.0.0"
+    "swifttools>=3.0.0",
+    "photutils"
 ]
 [project.optional-dependencies]
 dev = [
@@ -65,6 +66,7 @@ extension-pkg-whitelist=["pydantic"]
 
 [tool.coverage.run]
 branch = true
+source = ["uvotredux"]
 
 [tool.coverage.report]
 # Regexes for lines to exclude from consideration

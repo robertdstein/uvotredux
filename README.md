@@ -132,6 +132,10 @@ You will see a directory created in your local data directory: `/path/to/local/d
 In the directory there will be a subdirectory for each visit, as well as a `uvot_results.csv` and `uvot_summary.csv` file.
 There are also two region files (`src.reg` and `bkg.reg`) that were used extract the source and background regions.
 
-`uvotredux` generates these automatically. However, it is possible that an unrelated source is present in the background region.
+`uvotredux` generates these automatically. The background region is automatically placed to avoid other sources
+detected in the real downloaded UVOT image, falling back to a fixed offset from the source if none can be found
+(or if detection fails for any reason). This only happens when the background region is actually created -
+if `bkg.reg` already exists and you don't pass `--overwrite`, it is left untouched.
+It is still possible that an unrelated source ends up in the background region regardless.
 You can check this by opening up one of the uncompressed images in ds9, e.g `/path/to/local/data/AT2025mav/00019808001/uvot/image/UW2.fits`.
 You can then overlay the regions from the `src.reg` and `bkg.reg` files to see if they are centered correctly.
